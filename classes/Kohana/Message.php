@@ -15,10 +15,12 @@ class Kohana_Message {
 	 */
 	public static $session_key = 'message';
 
-	// Message types
+	public static $config = NULL;
+
 	const SUCCESS = 'success';
-	const NOTICE  = 'notice';
+	const INFO    = 'info';
 	const ERROR   = 'error';
+	const WARNING = 'warning';
 
 	/**
 	 * Adds a new message.
@@ -71,8 +73,14 @@ class Kohana_Message {
 	 * @param   boolean  set to FALSE to not clear messages
 	 * @return  string   message output (HTML)
 	 */
-	public static function render($view = NULL, $clear = TRUE)
+	public static function render($profile = 'default', $clear = TRUE)
 	{
+		// Load config
+		if ( ! Message::$config)
+		{
+			Message::$config = Kohana::$config->load('message');
+		}
+
 		// Nothing to render
 		if (($messages = Message::get()) === NULL)
 			return '';
@@ -83,20 +91,17 @@ class Kohana_Message {
 			Message::clear();
 		}
 
-		if ($view === NULL)
+		if ( ! isset(Message::$config->$profile))
 		{
-			// Use the default view
-			$view = 'message/basic';
-		}
-
-		if ( ! $view instanceof Kohana_View)
-		{
-			// Load the view file
-			$view = View::factory($view);
+			throw new Kohana_Exception('Message profile :name not defined in configuration',
+				array(':name' => $profile));
 		}
 
 		// Return the rendered view
-		return $view->set('messages', $messages)->render();
+		return View::factory(Message::$config->{$profile}['view'])
+			->set('messages', $messages)
+			->set('classes', Message::$config->{$profile}['classes'])
+			->render();
 	}
 
 }
