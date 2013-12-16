@@ -26,12 +26,22 @@ class Kohana_Message {
 	 * Adds a new message.
 	 *
 	 * @param   string  message type (e.g. Message::SUCCESS)
-	 * @param   string  message text
+	 * @param   string|array  message text
 	 * @param   array   any options for the message
 	 * @return  void
 	 */
 	public static function set($type, $text, array $attributes = NULL)
 	{
+		if (is_array($text))
+		{
+			foreach ($text as $msg)
+			{
+				static::set($type, $msg, $attributes);
+			}
+
+			return;
+		}
+
 		// Load existing messages
 		$messages = (array) Message::get();
 
