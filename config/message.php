@@ -25,4 +25,16 @@ return array
 			'warning' => NULL,
 		),
 	),
+
+	'bootstrap3' => array
+	(
+		'view' => 'message/bootstrap',
+
+		'classes' => array(
+			'success' => 'alert-success',
+			'info'    => 'alert-info',
+			'error'   => 'alert-danger',
+			'warning' => 'alert-warning',
+		),
+	),
 );
